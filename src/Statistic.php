@@ -50,7 +50,7 @@ class Statistic extends Model
         return $builder->whereJsonLength("values->$key",'>',0);
     }
 
-    public static function findByKey(string $table,string $key)
+    public static function findByStatKey(string $table,string $key)
     {
         return (new static())
             ->newQuery()
