@@ -64,7 +64,7 @@ class Tracker
      * Generate the triggers for the aggregates.
      *
      */
-    public function create() : void
+    public function create() : void // TODO rename current method name to more suitable name like start or runTracking (as it create or update new keys)
     {
         $items = $this->aggregates->map(function($item) {
             return "'{$item['key']}', {$item['sql']}";
@@ -84,7 +84,7 @@ class Tracker
 
         Statistic::updateOrCreate(['table' => $this->table],[
             'table'  => $this->table,
-            'values' => $this->aggregates->mapWithKeys(fn($item) => [$item['key'] => Statistic::findByKey($this->table,$item['key'])?->values[$item['key']] ?: 0])->toArray(),
+            'values' => $this->aggregates->mapWithKeys(fn($item) => [$item['key'] => Statistic::findByStatKey($this->table,$item['key'])?->values[$item['key']] ?: 0])->toArray(),
         ]);
 
         // TODO: delete old triggers if table name changed in current model
