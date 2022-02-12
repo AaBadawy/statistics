@@ -82,9 +82,11 @@ class Tracker
             File::get(__DIR__ . '/../stubs/trigger.stub')
         );
 
+        $stat_row = Statistic::query()->find($this->table);
+
         Statistic::updateOrCreate(['table' => $this->table],[
             'table'  => $this->table,
-            'values' => $this->aggregates->mapWithKeys(fn($item) => [$item['key'] => Statistic::findByStatKey($this->table,$item['key'])?->values[$item['key']] ?: 0])->toArray(),
+            'values' => $this->aggregates->mapWithKeys(fn($item) => [$item['key'] => $stat_row?->values[$item['key']] ?: 0])->toArray(),
         ]);
 
         // TODO: delete old triggers if table name changed in current model

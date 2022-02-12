@@ -4,6 +4,7 @@ namespace Statistics;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Statistic extends Model
 {
@@ -45,17 +46,37 @@ class Statistic extends Model
         return config('statistics.primary_key_column','table');
     }
 
-    public function scopeByStatKey(Builder $builder,string $key)
+    public function scopeByStatKey(Builder $builder,string $key,string $boolean = 'and')
     {
-        return $builder->whereJsonLength("values->$key",'>',0);
+        return $builder->whereJsonLength("values->$key",'>',0,$boolean);
     }
 
-    public static function findByStatKey(string $table,string $key)
+    public function scopeByStatKeys(Builder $builder,\Countable $keys,string $boolean = 'or')
+    {
+        $query = $builder->byStatKey(current($keys),$boolean);
+
+        foreach ($keys as $index => $key) {
+            $query->byStatKey($key,'and',$boolean);
+        }
+
+        return $query;
+    }
+
+    public static function findByStatKey(string $table,string $key):self
     {
         return (new static())
             ->newQuery()
             ->whereKey($table)
             ->byStatKey($key)
             ->first();
+    }
+
+    public static function findByManyStatKeys(string $table,\Countable $keys,string $boolean = 'or'): Collection
+    {
+        return (new static())
+            ->newQuery()
+            ->whereKey($table)
+            ->where(self::whereKeys($keys,$boolean))
+            ->get();
     }
 }
