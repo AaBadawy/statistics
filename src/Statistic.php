@@ -55,6 +55,8 @@ class Statistic extends Model
     {
         $query = $builder->byStatKey(current($keys),$boolean);
 
+        next($keys);
+
         foreach ($keys as $index => $key) {
             $query->byStatKey($key,'and',$boolean);
         }
