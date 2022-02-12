@@ -45,15 +45,17 @@ class Statistic extends Model
         return config('statistics.primary_key_column','table');
     }
 
-    public function scopeByKey(Builder $builder,string $key)
+    public function scopeByStatKey(Builder $builder,string $key)
     {
         return $builder->whereJsonLength("values->$key",'>',0);
     }
 
     public static function findByKey(string $table,string $key)
     {
-        return (new static())->newQuery()
-            ->whereKey($table)->byKey($key)
+        return (new static())
+            ->newQuery()
+            ->whereKey($table)
+            ->byStatKey($key)
             ->first();
     }
 }
