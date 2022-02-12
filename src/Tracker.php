@@ -2,6 +2,7 @@
 
 namespace Statistics;
 
+use Illuminate\Database\Query\Builder;
 use Triggers\Trigger;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -81,10 +82,12 @@ class Tracker
             File::get(__DIR__ . '/../stubs/trigger.stub')
         );
 
-        Statistic::create([
+        Statistic::updateOrCreate(['table' => $this->table],[
             'table'  => $this->table,
-            'values' => $this->aggregates->mapWithKeys(fn($item) => [$item['key'] => 0])->toArray(),
+            'values' => $this->aggregates->mapWithKeys(fn($item) => [$item['key'] => Statistic::findByKey($this->table,$item['key'])?->values[$item['key']] ?: 0])->toArray(),
         ]);
+
+        // TODO: delete old triggers if table name changed in current model
 
         Trigger::table($this->table)->key('statistics')->afterDelete(fn() => $statement);
         Trigger::table($this->table)->key('statistics')->afterInsert(fn() => $statement);

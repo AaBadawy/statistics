@@ -2,6 +2,7 @@
 
 namespace Statistics;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Statistic extends Model
@@ -37,5 +38,22 @@ class Statistic extends Model
     public function getTable() : string
     {
         return config('statistics.table', 'statistics');
+    }
+
+    public function getKeyName()
+    {
+        return config('statistics.primary_key_column','table');
+    }
+
+    public function scopeByKey(Builder $builder,string $key)
+    {
+        return $builder->whereJsonLength("values->$key",'>',0);
+    }
+
+    public static function findByKey(string $table,string $key)
+    {
+        return (new static())->newQuery()
+            ->whereKey($table)->byKey($key)
+            ->first();
     }
 }

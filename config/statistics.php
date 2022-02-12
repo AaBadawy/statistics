@@ -14,4 +14,12 @@ return [
 
     'table' => 'statistics',
 
+    /*
+    | -------------------------------------------------------------------------
+    | Database table primary key
+    | -------------------------------------------------------------------------
+    | This value controls the name of the primary key column of the table that
+    | will contain all the generated statistics. In most cases, the default should be fine.
+     */
+    'primary_key_column'   => 'table'
 ];
